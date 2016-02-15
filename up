@@ -1,0 +1,82 @@
+#!/bin/sh
+# up - simple-as-beans puush clone
+# You're gonna have to change some stuff.
+# Dependencies: scp, ssh, maim, slop, xclip, POSIX-complant sh
+# Example .ssh/config entry:
+# Host uploads
+#	HostName kurofuku.me
+#	User uploads
+#	Port 443
+#	IdentityFile ~/.ssh/id_ed25519-uploads
+# Make sure your key is passphraseless so you can call it from dmenu() et al
+
+sshhost=uploads
+shot=maim
+clip="xclip -o"
+full=$shot
+sel="$shot -slc0.5,0.5,0.5,0.5"
+defaultpath=u
+url=https://kurofuku.me
+wwwdir=/home/yuuko/werc/sites/kurofuku.me
+
+function usage {
+	cat <<-EOF
+	Usage:
+	    `basename $0` -[ uaifshc ] [ FILE ]
+	    If none of -f, -a, or -c are specified, FILE is mandatory.
+	Options:
+	    -u    Upload to /u/
+	    -a    Upload to /a/
+	    -i    Upload to /i/
+	    -f    Capture the whole screen; implies -i
+	    -s    Capture a selection; implies -i
+	    -c    Upload the contents of the clipboard; implies -u
+	    -h    Show this message
+	EOF
+}
+
+
+while getopts :hfsuaic opt; do
+	[ -z $OPTARG ] || file=$OPTARG
+	case $opt in
+		i) defaultpath=i
+		   shift 1;;
+		u) defaultpath=u
+		   shift 1;;
+		a) defaultpath=a
+		   shift 1;;
+		f) defaultpath=i
+		   do=$full;;
+		s) defaultpath=i
+		   do=$sel;;
+		c) defaultpath=u
+		   do=$clip;;
+		h) usage && exit 0;;
+		?) usage && exit 1;;
+	esac
+
+done
+
+[ -z "$1" ] && usage && exit 1 || file="$1"
+	
+if ! [ -z "$do" ]; then
+	file="/tmp/`date +%s`"
+	int=""
+	case $do in
+		ma*) file=$file".png";;
+		xc*) file=$file".txt"
+		     int=">";;
+	esac
+	eval $do $int $file
+fi
+if ! [ -r "$file" ]; then 
+	echo "`basename $0`: "$file": cannot open for reading." && exit 1
+fi
+
+if scp "$file" $sshhost:$wwwdir/$defaultpath/; then
+	ssh $sshhost eval chmod 644 "$wwwdir/$defaultpath/`basename \"$file\"`"
+	url="$url/$defaultpath/`basename "$file" | sed -f ~/bin/url.sed`"
+	echo -n $url | xclip -selection primary &&
+	echo -n $url | xclip -selection clipboard &&
+	notify-send "uploaded to $url" 
+fi
