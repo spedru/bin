@@ -19,7 +19,7 @@ defaultpath=u
 url=https://kurofuku.me
 wwwdir=/home/yuuko/werc/sites/kurofuku.me
 
-function usage {
+usage() {
 	cat <<-EOF
 	Usage:
 	    `basename $0` -[ uaifshc ] [ FILE ]
