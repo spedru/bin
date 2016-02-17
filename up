@@ -22,12 +22,13 @@ wwwdir=/home/yuuko/werc/sites/kurofuku.me
 usage() {
 	cat <<-EOF
 	Usage:
-	    `basename $0` -[ uaifshc ] [ FILE ]
-	    If none of -f, -a, or -c are specified, FILE is mandatory.
+	    `basename $0` -[ uaiofshc ] [ FILE ]
+	    If none of -f, -s, or -c are specified, FILE is mandatory.
 	Options:
 	    -u    Upload to /u/
 	    -a    Upload to /a/
 	    -i    Upload to /i/
+	    -o    Post onion url instead
 	    -f    Capture the whole screen; implies -i
 	    -s    Capture a selection; implies -i
 	    -c    Upload the contents of the clipboard; implies -u
@@ -36,14 +37,15 @@ usage() {
 }
 
 
-while getopts :hfsuaic opt; do
-	[ -z $OPTARG ] || file=$OPTARG
+while getopts :hfsuaioc opt; do
 	case $opt in
 		i) defaultpath=i
 		   shift 1;;
 		u) defaultpath=u
 		   shift 1;;
 		a) defaultpath=a
+		   shift 1;;
+		o) url=http://kurofukuobimdiet.onion
 		   shift 1;;
 		f) defaultpath=i
 		   do=$full;;
@@ -54,8 +56,9 @@ while getopts :hfsuaic opt; do
 		h) usage && exit 0;;
 		?) usage && exit 1;;
 	esac
-
 done
+
+shift 1
 
 [ -z "$1" ] && usage && exit 1 || file="$1"
 	
