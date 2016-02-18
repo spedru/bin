@@ -39,14 +39,10 @@ usage() {
 
 while getopts :hfsuaioc opt; do
 	case $opt in
-		i) defaultpath=i
-		   shift 1;;
-		u) defaultpath=u
-		   shift 1;;
-		a) defaultpath=a
-		   shift 1;;
-		o) url=http://kurofukuobimdiet.onion
-		   shift 1;;
+		i) defaultpath=i;;
+		u) defaultpath=u;;
+		a) defaultpath=a;;
+		o) url=http://kurofukuobimdiet.onion;;
 		f) defaultpath=i
 		   do=$full;;
 		s) defaultpath=i
@@ -58,11 +54,16 @@ while getopts :hfsuaioc opt; do
 	esac
 done
 
-shift 1
-
-[ -z "$1" ] && usage && exit 1 || file="$1"
+shift `echo $OPTIND - 1 | bc`
 	
-if ! [ -z "$do" ]; then
+if [ -z "$do" ]; then
+	if [ -z "$1" ]; then
+		usage
+		exit 1
+	else
+		file="$1"
+	fi
+else
 	file="/tmp/`date +%s`"
 	int=""
 	case $do in
@@ -72,12 +73,14 @@ if ! [ -z "$do" ]; then
 	esac
 	eval $do $int $file
 fi
+
+
 if ! [ -r "$file" ]; then 
 	echo "`basename $0`: "$file": cannot open for reading." && exit 1
 fi
 
 if scp "$file" $sshhost:$wwwdir/$defaultpath/; then
-	ssh $sshhost eval chmod 644 "$wwwdir/$defaultpath/`basename \"$file\"`"
+	ssh $sshhost echo chmod 644 "$wwwdir/$defaultpath/`basename \"$file\" | sed -f ~/bin/escape.sed`"
 	url="$url/$defaultpath/`basename "$file" | sed -f ~/bin/url.sed`"
 	echo -n $url | xclip -selection primary &&
 	echo -n $url | xclip -selection clipboard &&
