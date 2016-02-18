@@ -55,15 +55,8 @@ while getopts :hfsuaioc opt; do
 done
 
 shift `echo $OPTIND - 1 | bc`
-	
-if [ -z "$do" ]; then
-	if [ -z "$1" ]; then
-		usage
-		exit 1
-	else
-		file="$1"
-	fi
-else
+
+if ! [ -z "$do" ]; then
 	file="/tmp/`date +%s`"
 	int=""
 	case $do in
@@ -72,15 +65,19 @@ else
 		     int=">";;
 	esac
 	eval $do $int $file
+elif [ -z "$1" ]; then
+	usage
+	exit 1
+else
+	file="$1"
 fi
-
 
 if ! [ -r "$file" ]; then 
 	echo "`basename $0`: "$file": cannot open for reading." && exit 1
 fi
 
 if scp "$file" $sshhost:$wwwdir/$defaultpath/; then
-	ssh $sshhost echo chmod 644 "$wwwdir/$defaultpath/`basename \"$file\" | sed -f ~/bin/escape.sed`"
+	echo chmod 644 '"'"$wwwdir/$defaultpath/`basename \"$file\"`"'"' | ssh -q $sshhost >/dev/null
 	url="$url/$defaultpath/`basename "$file" | sed -f ~/bin/url.sed`"
 	echo -n $url | xclip -selection primary &&
 	echo -n $url | xclip -selection clipboard &&
