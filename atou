@@ -1,0 +1,3 @@
+#!/usr/bin/env rc
+# narrow latin to wide latin ("ascii to unicode")
+9 tr ' 　¢£￠￡!-~！-～' '　 ￠￡¢£！-～!-~'
