@@ -1,4 +1,4 @@
-#!/usr/lib/plan9/bin/rc
+#!/usr/bin/env rc
 # original by Micah Stetson
 fmtcmd=goimports # originall gofmt, hence the name
 fn aread { 9p read acme/$winid/$1 }
