@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# If you use moc and want a "now playing" in i3, make this your $status_command
+# You definitely want to make sure i3status' output mode is is set to i3bar,
+# because we're being evil and manipulating json with regex.
+
+trigger_prefix="E:" # The prefix of the item you want this to be *after* 
+np_prefix="NP:"     # This item's prefix
+
+item() {
+	mocp -i | grep ^"$*" | sed 's/^[^ ]* //;s/^$/Unknown/;s/"\([^"]*\)"/``\1'"''"'/g;s/\//\\\//g;s/[&]/\\&/g' 
+}
+
+i3status | 
+while read line; do # The reason we loop line-by-line instead of just a constant stream is so that the substitution gets updated. 
+		echo $line | 
+		sed 's/\('$trigger_prefix' [^"]*"},\)/\1{"full_text":"'"$np_prefix $(item Artist) - $(item SongTitle)"'","name":"mocp"},/'
+done
