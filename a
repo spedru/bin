@@ -1,0 +1,11 @@
+#!/usr/bin/env rc
+# wrapper to launch acme with nice defaults
+
+SHELL=rc
+GOPATH=$HOME
+prompt=('; ' '  ')
+
+# this font has to manually be copied from a 9front distribution image
+9 acme -f $PLAN9/font/terminus/unicode.12.font &
+sleep 0.1 # add things to un in acme after here
+win
