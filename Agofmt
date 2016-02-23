@@ -1,6 +1,6 @@
 #!/usr/bin/env rc
 # original by Micah Stetson
-fmtcmd=goimports # originall gofmt, hence the name
+fmtcmd=goimports # originally gofmt, hence the name
 fn aread { 9p read acme/$winid/$1 }
 fn awrite { 9p write acme/$winid/$1 }
 ftmp=`{mktemp /tmp/Agofmt.XXXXXX}
