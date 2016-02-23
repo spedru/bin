@@ -1,3 +1,4 @@
 #!/usr/bin/env rc
 # narrow latin to wide latin ("ascii to unicode")
+# It's ＣＲＵＣＩＡＬ that you use p9p tr on GNU systems, because GNU tr is bytewise, as opposed to BSD
 9 tr ' 　¢£￠￡!-~！-～' '　 ￠￡¢£！-～!-~'
