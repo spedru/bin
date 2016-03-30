@@ -4,9 +4,10 @@
 # You definitely want to make sure i3status' output mode is is set to i3bar,
 # because we're being evil and manipulating json with regex.
 
+. `{dirname $0}^/9.subr
+
 ifs='
 '                        # don't split on spaces in your regex
-PATH=$PLAN9/bin:$PATH    # $PLAN9/bin isn't in $PATH by default with OpenBSD p9p installed
 trigger_prefix='trunk0:' # The prefix of the item you want this to be *after* 
 np_prefix='mpd:'         # This item's prefix
 
@@ -18,6 +19,6 @@ i3status | while ()
 			echo '▮▮' `{mpc current}
 		if not
 			echo '◾'
-		} | sed 's/([\/\.\*\+\?\[\]\(\)\|\\\^\$])/\\\1/g'
+		} | sanitize 
 	}^'","name":"mpd"},/'
 
