@@ -1,0 +1,4 @@
+#!/usr/local/plan9/bin/rc
+. `{dirname $0}^/9.subr
+
+sed 's/([\/\.\*\+\?\[\]\(\)\|\\\^\$])/\\\1/g' $*
