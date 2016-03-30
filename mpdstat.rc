@@ -1,0 +1,25 @@
+#!/usr/local/plan9/bin/rc
+
+# If you use mpd and want a "now playing" in i3, make this your $status_command
+# You definitely want to make sure i3status' output mode is is set to i3bar,
+# because we're being evil and manipulating json with regex.
+
+trigger_prefix='trunk0:' # The prefix of the item you want this to be *after* 
+np_prefix='mpd:'         # This item's prefix
+
+fn symbol {
+	if (mpc | grep playing >/dev/null)
+		echo '▶'
+	if not if (mpc | grep paused >/dev/null)
+		echo '▮▮'
+	if not
+		echo '◾'
+}
+
+ifs='
+'
+
+i3status | while (k=`{read}) {
+	echo $k | 9 sed 's/('$trigger_prefix' [^"]+"},)/\1{"full_text":"'$np_prefix' '^`{symbol}^' '^`{echo -n `{mpc current}}^'","name":"mpd"},/'
+}
+
