@@ -1,8 +1,9 @@
 #!/usr/bin/env rc
 # wrapper to launch acme with nice defaults
 
-SHELL=rc
-GOPATH=$HOME
+SHELL=rc     # rc is friendlier with non-terminals
+GOPATH=$HOME # yes
+PATER=p      # acme wins can't do less/more
 prompt=('; ' '  ')
 
 # this font has to manually be copied from a 9front distribution image

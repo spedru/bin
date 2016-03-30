@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# If you use mpd and want a "now playing" in i3, make this your $status_command
+# You definitely want to make sure i3status' output mode is is set to i3bar,
+# because we're being evil and manipulating json with regex.
+
+trigger_prefix="trunk0:" # The prefix of the item you want this to be *after* 
+np_prefix="mpd:"         # This item's prefix
+
+symbol() {
+	if mpc | grep playing >/dev/null; then
+		echo '▶'
+	elif mpc | grep paused >/dev/null; then
+		echo '▮▮'
+	else
+		echo '◾'
+	fi
+}
+
+
+i3status | 
+while read line; do # The reason we loop line-by-line instead of just a constant stream is so that the substitution gets updated. 
+		echo $line | 
+		sed 's/\('$trigger_prefix' [^"]*"},\)/\1{"full_text":"'"$np_prefix $(symbol) $(mpc current)"'","name":"mpd"},/'
+done
